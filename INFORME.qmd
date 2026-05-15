@@ -1,0 +1,255 @@
+---
+title: "INFORME"
+author: 
+  - "CASTRO GARCIA ANGEL ERNESTO"
+  -  "RAMÍREZ PERA XIMENA"
+format: pdf
+editor: visual
+---
+
+## 
+
+## INTRODUCCIÓN
+
+El análisis demográfico constituye una herramienta fundamental para comprender la dinámica poblacional y su impacto en el desarrollo social, económico y territorial. En el contexto del estado de Puebla, el estudio de variables como el crecimiento poblacional, la estructura por edades, la migración y la distribución geográfica permite identificar tendencias que influyen directamente en la planeación de políticas públicas. Además, el análisis demográfico facilita la evaluación de necesidades futuras en sectores clave como educación, salud, vivienda y empleo, contribuyendo a la toma de decisiones estratégicas a nivel estatal.
+
+Dentro del marco nacional de México, los cambios demográficos han mostrado transformaciones importantes en las últimas décadas, como la transición demográfica, la urbanización acelerada y los movimientos migratorios internos. Instituciones como el INEGI y el CONAPO proporcionan información estadística confiable que permite analizar estos fenómenos con rigor metodológico. La utilización de estas fuentes oficiales garantiza que el proyecto demográfico tenga bases sólidas para el análisis y la proyección de escenarios futuros.
+
+Por lo tanto, el presente proyecto busca generar un diagnóstico demográfico integral que permita comprender la situación actual y las perspectivas futuras de la población en Puebla. A través del análisis de indicadores demográficos clave y el uso de metodologías estadísticas, se pretende aportar información relevante que sirva como base para la formulación de estrategias de desarrollo sostenible, contribuyendo al bienestar social y al crecimiento equilibrado del estado en el mediano y largo plazo.
+
+## Lectura del primer objeto en la web
+
+Lectura de la tabla de población mitad de año de las estimaciones-proyecciones de población de México.
+
+## 
+
+```{r, message=FALSE, warning=FALSE}
+
+# 1. Remover los objetos
+rm(list = ls())
+
+# 2. Instalar paquetes install.packages("data.table", dependencies = T)
+#install.packages("kableExtra", 
+                 #dependencies = T)
+#install.packages("lubridate",
+                 #dependencies = T)
+#2.5
+library(data.table)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(kableExtra)
+library(lubridate)
+# 3. Descargar tablas de datos
+pop <- fread("https://repodatos.atdt.gob.mx/CONAPO/proyecciones/00_Pob_Mitad_1950_2070.csv")
+
+
+mort <- fread("https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_DeathsBySingleAgeSex_Medium_1950-2023.csv.gz")
+
+apv <- fread ("https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_PopulationByAge5GroupSex_Medium.csv.gz")
+
+#pop <- fread("data/00_Pob_Mitad_1950_2070")
+
+# 4. Exploración de la tabla de población
+table(pop$ENTIDAD)
+table(pop$CVE_GEO)
+table(pop$ANIO)
+
+names(pop)
+sum(pop$POBLACION)
+```
+
+**Pirámide poblacional de Puebla del año 2026.**
+
+```{r, echo=FALSE, fig.height=5,fig.with=8}
+# Filtrar datos
+puebla <- pop[ENTIDAD == "Puebla" & ANIO == 2026,
+              .(SEXO, EDAD, POBLACION)]
+
+# Crear variable negativa para hombres
+puebla$POBLACION2 <- ifelse(puebla$SEXO == "Hombres",
+                            -puebla$POBLACION,
+                            puebla$POBLACION)
+
+# Calcular máximo absoluto para simetría
+max_val <- max(abs(puebla$POBLACION2))
+
+# Gráfica
+ggplot(puebla, aes(x = EDAD, y = POBLACION2, fill = SEXO)) +
+  geom_bar(stat = "identity", width = 0.8) +
+  coord_flip() +
+  geom_hline(yintercept = 0, color = "#333333", linewidth = 0.4) +
+  scale_y_continuous(
+  breaks = sort(unique(c(seq(-max_val, max_val, by = 20000), 0))),
+  labels = function(x) scales::comma(abs(x)),
+  limits = c(-max_val, max_val),
+  expand = c(0, 0)
+  ) +
+
+  scale_fill_manual(values = c("Hombres" = "#355070",
+                               "Mujeres" = "#C06C84")) +
+  labs(
+    title = "Pirámide poblacional de Puebla, 2026",
+    subtitle = "Estimaciones y proyecciones de población a mitad de año",
+    x = "Edad",
+    y = "Población",
+    caption = "Fuente: CONAPO, Proyecciones de la población de México 1950–2070"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.subtitle = element_text(size = 11, hjust = 0.5),
+    axis.text.y = element_text(size = 6),
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )
+```
+
+La pirámide muestra que el grupo 0-14 años es ligeramente más ancho que varios tramos jóvenes-adultos (sobre todo 25-39), lo que indica que la natalidad no está cayendo bruscamente sino que se mantiene relativamente estable. El mayor volumen se concentra aproximadamente entre 10 y 29 años, formando una base amplia característica de una población joven. A partir de los 40 años el tamaño disminuye de manera continua y después de los 70 la reducción es más acelerada, por lo que el envejecimiento todavía es moderado; la parte superior es estrecha y no domina la estructura.
+
+En conjunto, Puebla presenta una estructura aún joven-expansiva moderada, con crecimiento demográfico activo y predominio de población infantil y juvenil, más cercana a una etapa intermedia de transición demográfica que a una población envejecida; económicamente esto implica mayor presión en educación, empleo y generación de oportunidades laborales antes que en sistemas de pensiones o atención geriátrica.
+
+**Pirámide poblacional de Puebla del año 2026.**
+
+```{r, echo=FALSE, fig.height=5,fig.with=8}
+# Filtrar datos
+puebla <- pop[ENTIDAD == "Puebla" & ANIO == 2070,
+              .(SEXO, EDAD, POBLACION)]
+
+# Crear variable negativa para hombres
+puebla$POBLACION2 <- ifelse(puebla$SEXO == "Hombres",
+                            -puebla$POBLACION,
+                            puebla$POBLACION)
+
+# Calcular máximo absoluto para simetría
+max_val <- max(abs(puebla$POBLACION2))
+
+# Gráfica
+ggplot(puebla, aes(x = EDAD, y = POBLACION2, fill = SEXO)) +
+  geom_bar(stat = "identity", width = 0.8) +
+  coord_flip() +
+  geom_hline(yintercept = 0, color = "#333333", linewidth = 0.4) +
+  scale_y_continuous(
+  breaks = sort(unique(c(seq(-max_val, max_val, by = 20000), 0))),
+  labels = function(x) scales::comma(abs(x)),
+  limits = c(-max_val, max_val),
+  expand = c(0, 0)
+  ) +
+
+scale_fill_manual(values = c("Hombres" = "#E6D5B8",
+                             "Mujeres" = "#5A1E36")) +
+  labs(
+    title = "Pirámide poblacional de Puebla, 2070",
+    subtitle = "Estimaciones y proyecciones de población a mitad de año",
+    x = "Edad",
+    y = "Población",
+    caption = "Fuente: CONAPO, Proyecciones de la población de México 1950–2070"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.subtitle = element_text(size = 11, hjust = 0.5),
+    axis.text.y = element_text(size = 6),
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )
+
+```
+
+La pirámide poblacional proyectada para Puebla en 2070 no muestra una base extremadamente estrecha ni una cúspide más ancha que el centro, sino una estructura casi estacionaria con tendencia al envejecimiento moderado. Los grupos en edades adultas (aproximadamente entre 30 y 60 años) concentran el mayor volumen poblacional, lo que indica que aún predomina la población en edad productiva. La base infantil es menor que los grupos centrales, lo que confirma una fecundidad reducida respecto a décadas pasadas, pero no evidencia una contracción drástica. En la parte superior se observa un aumento progresivo de población adulta mayor, aunque no supera en magnitud a los grupos medios; por tanto, el envejecimiento es claro pero no extremo. También se aprecia una ligera mayor presencia femenina en edades avanzadas, coherente con la mayor esperanza de vida de las mujeres. En conjunto, la estructura sugiere una transición demográfica avanzada pero aún con un peso importante de población económicamente activa.
+
+En términos económicos, esta composición implica que Puebla en 2070 todavía contaría con una base significativa de población en edad laboral, lo que podría sostener la actividad productiva si se mantienen niveles adecuados de empleo y productividad. Sin embargo, el crecimiento de los grupos de 60 años y más incrementará gradualmente la presión sobre los sistemas de salud y pensiones, aunque no en un escenario de sobreenvejecimiento extremo. La economía estatal tendría que adaptarse a una demanda creciente de servicios médicos y de cuidado, al tiempo que aprovecha el amplio contingente adulto mediante inversión en capacitación, tecnología y generación de empleo formal para sostener el equilibrio entre población dependiente y productiva.
+
+## Lectura de tabla del mismo proyecto
+
+```{r}
+deaths <- fread("data/Mx_ARG_GUA.csv")
+kable(deaths, caption = "Muertes de Argentina y Guatemala")
+```
+
+##Escritura de funciones
+
+\### Media ponderada.
+
+```{r}
+
+weight_mean <- function(x,
+                        w=rep(1/length(x), 
+                              length(x))){
+  x_mean <- sum(x*w)/sum(w)
+  return(x_mean)
+  
+}
+
+
+#Ejemplo
+weight_mean(c(10, 40), c(.3, .7)) #con pesos.
+weight_mean(c(10, 40)) #sin pesos.
+
+```
+
+##crecimiento exponencial.
+
+```{r}
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+
+
+expo <- function(K_0, K_T, t_0, t_T, t){
+  
+  # Convertir fechas a formato decimal
+  t0_dec <- decimal_date(as.Date(t_0))
+  tT_dec <- decimal_date(as.Date(t_T))
+  
+  # Intervalo total
+  dt <- tT_dec - t0_dec
+  
+  # Tasa de crecimiento continua
+  r <- log(K_T / K_0) / dt
+  
+  # Tiempo transcurrido desde t0
+  h <- t - t0_dec
+  
+  # Modelo exponencial
+  K_h <- K_0 * exp(r * h)
+  
+  return(K_h)
+}
+
+# Generar proyección
+cre_exp_vals <- expo(
+  K_0 = 112336538,
+  K_T = 126014024,
+  t_0 = "2010-06-25",
+  t_T = "2020-03-15",
+  t   = seq(2020.5, 2100.5, 1)
+)
+
+# Graficar
+data.frame(
+  Año = c(decimal_date(as.Date("2010-06-25")),
+          decimal_date(as.Date("2020-03-15")),
+          seq(2020.5, 2100.5, 1)),
+  K_t = c(112336538, 126014024, cre_exp_vals)
+) %>%
+  ggplot(aes(Año, K_t)) +
+  geom_line() +
+  geom_point()
+```
+
+#Tasas brutas y especificas
+
+```{r}
+
+deaths <- deaths %>%
+       mutate(m_x = D/N)
+
+plot(deaths[location =="Argentina", x], 
+     log(deaths[location =="Argentina", m_x]))
+
+#Tasa bruta de mortalidad
+deaths %>%
+  group_by(location) %>%
+  summarise(weight_mean(m_x, x/sum(x)))
+```
