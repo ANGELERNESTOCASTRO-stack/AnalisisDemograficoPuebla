@@ -124,9 +124,12 @@ informe.pdf
 
 ---
 
-## 👨‍🎓 Autores
+# Autores
 
-Estudiantes de la Licenciatura en Actuaría
+* **CASTRO GARCIA ANGEL ERNESTO**
+* **RAMÍREZ PERA XIMENA**
+
+Licenciatura en Actuaría
 Universidad Nacional Autónoma de México (UNAM)
 
 ---
