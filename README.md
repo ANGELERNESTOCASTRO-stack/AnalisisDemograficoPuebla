@@ -130,6 +130,7 @@ informe.pdf
 * **RAMÍREZ PERA XIMENA**
 
 Licenciatura en Actuaría
+
 Universidad Nacional Autónoma de México (UNAM)
 
 ---
