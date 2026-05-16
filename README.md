@@ -116,12 +116,9 @@ quarto render informe.qmd --to pdf
 
 ## 📄 Informe Final
 
-El reporte completo se encuentra en:
+El reporte completo se encuentra disponible en el siguiente enlace:
 
-```text
-informe.pdf
-```
-
+[📥 Descargar informe final en PDF](informe.pdf)
 ---
 
 # Autores
