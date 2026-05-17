@@ -115,11 +115,10 @@ quarto render informe.qmd --to pdf
 ---
 ## 📄 Informe Final
 
-El reporte completo se encuentra disponible en el siguiente enlace:
+[Ver INFORME.pdf](INFORME.pdf)
 
-[📥 Descargar informe final en PDF](INFORME.pdf)
+[Ver INFORME.qmd](INFORME.qmd)
 ---
-
 # Autores
 
 * **CASTRO GARCIA ANGEL ERNESTO**
