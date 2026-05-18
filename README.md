@@ -166,7 +166,7 @@ quarto render INFORME.qmd
 
 - CONAPO: Proyecciones de población de México
 - INEGI: Censos y defunciones registradas
-- United Nations World Population Prospects (2024)
+
 
 ---
 
