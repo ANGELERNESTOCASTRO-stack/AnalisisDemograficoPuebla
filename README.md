@@ -174,7 +174,7 @@ quarto render INFORME.qmd
 
 Repositorio GitHub:
 
-https://github.com/ANGELERNESTOCASTRO-stack/AnalisisDemograficoPuebla
+https://github.com/ANGELERNESTOCASTRO-stack/AnalisisDemograficoPuebla/tree/main
 
 ---
 
