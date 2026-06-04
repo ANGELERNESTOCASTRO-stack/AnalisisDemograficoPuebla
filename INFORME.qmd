@@ -1,13 +1,39 @@
 ---
-title: "INFORME"
-author: 
-  - "CASTRO GARCIA ANGEL ERNESTO"
-  -  "RAMÍREZ PERA XIMENA"
-format: pdf
+title: "Análisis Demográfico de Puebla"
+author:
+  - "Ángel Castro"
+  - "Ximena Pera"
+date: today
+
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    geometry:
+      - margin=1in
+    include-in-header:
+      text: |
+        \usepackage{fancyhdr}
+        \pagestyle{fancy}
+
+        \fancyhf{}
+
+        % Encabezado
+        \fancyhead[L]{Análisis Demográfico}
+        \fancyhead[C]{Puebla}
+        \fancyhead[R]{Ángel Castro \quad | \quad Ximena Pera}
+
+        % Pie de página
+        \fancyfoot[L]{Facultad de Ciencias - UNAM}
+        \fancyfoot[C]{2026}
+        \fancyfoot[R]{Página \thepage}
+
+        % Líneas
+        \renewcommand{\headrulewidth}{0.4pt}
+        \renewcommand{\footrulewidth}{0.4pt}
+
 editor: visual
 ---
-
-## 
 
 ## INTRODUCCIÓN
 
@@ -27,49 +53,43 @@ El siguiente diagrama resume el procedimiento metodológico utilizado para la co
 ![](diagrama_metodologia.png){width="105%"}
 :::
 
-## Lectura del primer objeto en la web
-
-Lectura de la tabla de población mitad de año de las estimaciones-proyecciones de población de México.
-
-## 
-
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
 
-# 1. Remover los objetos
-rm(list = ls())
+# 1. Remover objetos
+# rm(list = ls())
 
-# 2. Instalar paquetes install.packages("data.table", dependencies = T)
-#install.packages("kableExtra", 
-                 #dependencies = T)
-#install.packages("lubridate",
-                 #dependencies = T)
-#2.5
+# 2. Instalar paquetes
+# install.packages("data.table", dependencies = TRUE)
+# install.packages("kableExtra", dependencies = TRUE)
+# install.packages("lubridate", dependencies = TRUE)
+
+# 3. Cargar librerías (estas sí se ejecutan)
 library(data.table)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(kableExtra)
 library(lubridate)
-# 3. Descargar tablas de datos
+
+# 4. Descargar tablas
 pop <- fread("https://repodatos.atdt.gob.mx/CONAPO/proyecciones/00_Pob_Mitad_1950_2070.csv")
 
+# mort <- fread("https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_DeathsBySingleAgeSex_Medium_1950-2023.csv.gz")
 
-mort <- fread("https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_DeathsBySingleAgeSex_Medium_1950-2023.csv.gz")
+# apv <- fread("https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_PopulationByAge5GroupSex_Medium.csv.gz")
 
-apv <- fread ("https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_PopulationByAge5GroupSex_Medium.csv.gz")
+# pop <- fread("data/00_Pob_Mitad_1950_2070")
 
-#pop <- fread("data/00_Pob_Mitad_1950_2070")
+# 5. Exploración de datos
+# table(pop$ENTIDAD)
+# table(pop$CVE_GEO)
+# table(pop$ANIO)
 
-# 4. Exploración de la tabla de población
-table(pop$ENTIDAD)
-table(pop$CVE_GEO)
-table(pop$ANIO)
-
-names(pop)
-sum(pop$POBLACION)
+# names(pop)
+# sum(pop$POBLACION)
 ```
 
 **Pirámide poblacional de Puebla del año 2026.**
@@ -175,40 +195,25 @@ En términos económicos, esta composición implica que Puebla en 2070 todavía 
 
 # Contexto demográfico de Puebla
 
-Puebla es una de las entidades con mayor población del país y presenta
-una distribución heterogénea entre zonas urbanas y rurales. Esta 
-característica puede influir directamente en los niveles de mortalidad 
-debido a diferencias en acceso a servicios de salud, infraestructura y 
-condiciones socioeconómicas.
+Puebla es una de las entidades con mayor población del país y presenta una distribución heterogénea entre zonas urbanas y rurales. Esta característica puede influir directamente en los niveles de mortalidad debido a diferencias en acceso a servicios de salud, infraestructura y condiciones socioeconómicas.
 
 Con fines analíticos se consideran los siguientes indicadores:
 
-• Densidad poblacional: Puebla concentra población en áreas metropolitanas 
-como Puebla-Tlaxcala, lo que puede modificar patrones de riesgo 
-epidemiológico.
+• Densidad poblacional: Puebla concentra población en áreas metropolitanas como Puebla-Tlaxcala, lo que puede modificar patrones de riesgo epidemiológico.
 
-• Porcentaje de población en pobreza: niveles elevados pueden asociarse
-con acceso desigual a servicios médicos y condiciones preventivas.
+• Porcentaje de población en pobreza: niveles elevados pueden asociarse con acceso desigual a servicios médicos y condiciones preventivas.
 
-• Índice de envejecimiento: el incremento de población adulta mayor
-modifica los patrones esperados de mortalidad y supervivencia.
+• Índice de envejecimiento: el incremento de población adulta mayor modifica los patrones esperados de mortalidad y supervivencia.
 
-Estos indicadores permiten contextualizar posteriormente los cambios 
-observados en esperanza de vida, tasas de mortalidad y supervivencia.
+Estos indicadores permiten contextualizar posteriormente los cambios observados en esperanza de vida, tasas de mortalidad y supervivencia.
 
 ##Escritura de funciones
 
-Para la construcción de las tablas de vida del estado de Puebla se emplearon 
-las fórmulas actuariales clásicas, siguiendo la metodología estándar utilizada 
-en demografía formal y análisis de mortalidad. En particular, se tomó como
-base el enfoque tradicional de tablas de vida presentado en Watcher, 
-complementado con la formalización teórica descrita en Preston, 
-Heuveline y Guillot (2001).
+Para la construcción de las tablas de vida del estado de Puebla se emplearon las fórmulas actuariales clásicas, siguiendo la metodología estándar utilizada en demografía formal y análisis de mortalidad. En particular, se tomó como base el enfoque tradicional de tablas de vida presentado en Watcher, complementado con la formalización teórica descrita en Preston, Heuveline y Guillot (2001).
 
 En este trabajo se utiliza una **tabla de vida abreviada**, con intervalos de edad de amplitud $n = 5$ años, lo cual es consistente con la disponibilidad de información estadística y la práctica común en estudios demográficos.
 
 A continuación, se describen los principales indicadores empleados en la construcción de la tabla de vida.
-
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 library(readxl)
@@ -326,7 +331,6 @@ landscape(
 )
 ```
 
-
 ------------------------------------------------------------------------
 
 ### Tasa central de mortalidad
@@ -432,6 +436,7 @@ donde: - $P(t)$ es la población en el tiempo $t$, - $P_0$ es la población inic
 En conjunto, estas expresiones permiten construir de manera sistemática la tabla de vida abreviada a partir de la información observada de defunciones y población por grupos de edad.
 
 ------------------------------------------------------------------------
+
 ## Cuadro con las esperanzas de vida
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -456,130 +461,129 @@ kable(
   )
 ```
 
-## Crecimiento exponencial de la población de Puebla
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+ #| echo: false
+ #| warning: false
+ #| message: false
 
-```{r}
-#| echo: false
-#| warning: false
-#| message: false
-
-library(data.table)
-library(ggplot2)
-library(lubridate)
-library(dplyr)
-library(scales)
+#Crecimiento exponencial de la población de Puebla
+# library(data.table)
+# library(ggplot2)
+# library(lubridate)
+# library(dplyr)
+# library(scales)
 
 # =========================
 # Población total Puebla
 # =========================
 
-K_0 <- pop[
-  ENTIDAD == "Puebla" &
-  ANIO == 2010,
-  sum(POBLACION)
-]
+# K_0 <- pop[
+#   ENTIDAD == "Puebla" &
+#   ANIO == 2010,
+#   sum(POBLACION)
+# ]
 
-K_T <- pop[
-  ENTIDAD == "Puebla" &
-  ANIO == 2021,
-  sum(POBLACION)
-]
+# K_T <- pop[
+#   ENTIDAD == "Puebla" &
+#   ANIO == 2021,
+#   sum(POBLACION)
+# ]
 
 # =========================
 # Función exponencial
 # =========================
 
-expo <- function(K_0, K_T, t_0, t_T, t){
+# expo <- function(K_0, K_T, t_0, t_T, t){
 
-  t0_dec <- decimal_date(as.Date(t_0))
-  tT_dec <- decimal_date(as.Date(t_T))
+#   t0_dec <- decimal_date(as.Date(t_0))
+#   tT_dec <- decimal_date(as.Date(t_T))
 
-  dt <- tT_dec - t0_dec
+#   dt <- tT_dec - t0_dec
 
-  r <- log(K_T / K_0) / dt
+#   r <- log(K_T / K_0) / dt
 
-  h <- t - t0_dec
+#   h <- t - t0_dec
 
-  K_h <- K_0 * exp(r * h)
+#   K_h <- K_0 * exp(r * h)
 
-  return(K_h)
-}
+#   return(K_h)
+# }
 
 # =========================
 # Proyección
 # =========================
 
-proy <- expo(
-  K_0 = K_0,
-  K_T = K_T,
-  t_0 = "2010-01-01",
-  t_T = "2021-01-01",
-  t = seq(2010, 2070, 1)
-)
+# proy <- expo(
+#   K_0 = K_0,
+#   K_T = K_T,
+#   t_0 = "2010-01-01",
+#   t_T = "2021-01-01",
+#   t = seq(2010, 2070, 1)
+# )
 
 # =========================
 # Base gráfica
 # =========================
 
-datos_exp <- data.frame(
-  Año = seq(2010, 2070, 1),
-  Poblacion = proy
-)
+# datos_exp <- data.frame(
+#   Año = seq(2010, 2070, 1),
+#   Poblacion = proy
+# )
 
-# Agregar puntos observados
-obs <- data.frame(
-  Año = c(2010, 2021),
-  Poblacion = c(K_0, K_T)
-)
+# # Agregar puntos observados
+# obs <- data.frame(
+#   Año = c(2010, 2021),
+#   Poblacion = c(K_0, K_T)
+# )
 
 # =========================
 # Gráfica
 # =========================
 
-ggplot(datos_exp, aes(Año, Poblacion)) +
+# ggplot(datos_exp, aes(Año, Poblacion)) +
 
-  geom_line(
-    linewidth = 1.2,
-    color = "#355070"
-  ) +
+#   geom_line(
+#     linewidth = 1.2,
+#     color = "#355070"
+#   ) +
 
-  geom_point(
-    data = obs,
-    aes(Año, Poblacion),
-    size = 3,
-    color = "#C06C84"
-  ) +
+#   geom_point(
+#     data = obs,
+#     aes(Año, Poblacion),
+#     size = 3,
+#     color = "#C06C84"
+#   ) +
 
-  scale_y_continuous(
-    labels = comma
-  ) +
+#   scale_y_continuous(
+#     labels = comma
+#   ) +
 
-  labs(
-    title = "Proyección exponencial de la población de Puebla",
-    subtitle = "Modelo basado en la población observada entre 2010 y 2021",
-    x = "Año",
-    y = "Población",
-    caption = "Fuente: CONAPO, Proyecciones de población"
-  ) +
+#   labs(
+#     title = "Proyección exponencial de la población de Puebla",
+#     subtitle = "Modelo basado en la población observada entre 2010 y 2021",
+#     x = "Año",
+#     y = "Población",
+#     caption = "Fuente: CONAPO, Proyecciones de población"
+#   ) +
 
-  theme_minimal() +
+#   theme_minimal() +
 
-  theme(
-    plot.title = element_text(
-      face = "bold",
-      size = 15,
-      hjust = 0.5
-    ),
+#   theme(
+#     plot.title = element_text(
+#       face = "bold",
+#       size = 15,
+#       hjust = 0.5
+#     ),
 
-    plot.subtitle = element_text(
-      size = 11,
-      hjust = 0.5
-    ),
+#     plot.subtitle = element_text(
+#       size = 11,
+#       hjust = 0.5
+#     ),
 
-    axis.title = element_text(
-      face = "bold"
-    )
-  )
+#     axis.title = element_text(
+#       face = "bold"
+#     )
+#   )
 ```
 
 #Tasas brutas y especificas
@@ -834,12 +838,10 @@ comportamientos demográficos esperados en poblaciones modernas.")
 
 ```
 
-
-
 ```{r}
 #| echo: false
 #| fig-align: center
-#| out-width: 85%
+#| out-width: 77%
 
 knitr::include_graphics("data/1.jpeg")
 knitr::include_graphics("data/2.jpeg")
@@ -849,48 +851,30 @@ knitr::include_graphics("data/2.jpeg")
 #| echo: false
 #| results: asis
 
-cat("
-Las tasas centrales de mortalidad de hombres y mujeres presentan un
-patrón creciente conforme avanza la edad, con niveles muy bajos en edades 
-infantiles y juveniles y aumentos acelerados después de los 60 años. En ambos
-sexos, 2021 registra valores superiores a 2010 y 2019, especialmente en
-edadesavanzadas, reflejando un incremento reciente de la mortalidad. 
-Sin embargo,los hombres mantienen niveles más altos que las mujeres en casi
-todos losgrupos de edad, lo que evidencia una mayor vulnerabilidad masculina y 
-contribuye a las diferencias observadas en esperanza de vida entre ambos sexos.
-
-")
+cat("Las gráficas muestran que las mujeres presentan mayor supervivencia que los hombres en todos los años analizados, especialmente en edades avanzadas. Entre 2010 y 2019 se observa una mejora en la esperanza de vida, reflejando mejores condiciones sanitarias y médicas. Sin embargo, en 2021 la supervivencia disminuye considerablemente, sobre todo después de los 50 años, debido al impacto de la pandemia. Económicamente, esto implica mayores presiones en salud pública, pensiones y productividad laboral.")
 ```
-
 
 ```{r}
 #| echo: false
 #| fig-align: center
-#| out-width: 85%
+#| out-width: 81%
 
 knitr::include_graphics("data/3.jpeg")
+knitr::include_graphics("data/4.jpeg")
 ```
 
 ```{r}
 #| echo: false
 #| results: asis
 
-cat("
-En Puebla, las mujeres presentan mayor esperanza de vida que los hombres
-en todos los años analizados. Entre 2010 y 2019 hubo un ligero aumento, 
-mientras que en 2021 ambos grupos registraron una disminución importante. 
-La reducción fue más fuerte en hombres, ampliando así la diferencia respecto
-a las mujeres.
-")
+cat("Las gráficas muestran que la probabilidad de morir aumenta conforme avanza la edad en hombres y mujeres. En 2010 se observan menores niveles de mortalidad, mientras que en 2021 las probabilidades aumentan considerablemente, especialmente después de los 50 años, reflejando el impacto de la pandemia. Además, los hombres presentan mayores probabilidades de morir que las mujeres en casi todas las edades. Económicamente, esto afecta la productividad, incrementa el gasto sanitario y genera presión sobre los sistemas de pensiones y seguridad social.")
 ```
-
 
 ```{r}
 #| echo: false
 #| fig-align: center
-#| out-width: 85%
+#| out-width: 104%
 
-knitr::include_graphics("data/4.jpeg")
 knitr::include_graphics("data/5.jpeg")
 ```
 
@@ -898,16 +882,8 @@ knitr::include_graphics("data/5.jpeg")
 #| echo: false
 #| results: asis
 
-cat("
-Las gráficas muestran que, conforme aumenta la edad, disminuye la 
-cantidad de personas sobrevivientes. En los tres años analizados, 
-las mujeres presentan mayores niveles de supervivencia respecto a 
-los hombres. Además, 2021 registra las cifras más altas de sobrevivencia,
-mientras que 2010 muestra los valores más bajos, especialmente en
-edades avanzadas.
-")
+cat("La gráfica muestra que las mujeres mantienen una esperanza de vida mayor que los hombres en Puebla durante 2010, 2019 y 2021. Entre 2010 y 2019 se observa una ligera mejora en ambos grupos; sin embargo, en 2021 la esperanza de vida disminuye considerablemente, especialmente en hombres. Esto refleja el impacto demográfico de la pandemia y el aumento de mortalidad. Económicamente, una menor esperanza de vida afecta la productividad laboral, incrementa los costos sanitarios y modifica la planeación de pensiones y seguridad social.")
 ```
-
 
 ```{r}
 #| echo: false
@@ -923,18 +899,14 @@ knitr::include_graphics("data/7.jpeg")
 #| results: asis
 
 cat("
-Las gráficas indican que la probabilidad de morir aumenta 
-conforme avanza la edad. En ambos sexos, 2021 presenta los niveles
-más altos de mortalidad y 2010 los más bajos. Además, los hombres 
-muestran probabilidades de muerte ligeramente superiores a las mujeres,
-especialmente en edades adultas y avanzadas de la vida.
+Las tasas centrales de mortalidad muestran un patrón similar en hombres y mujeres: alta mortalidad en edades tempranas, descenso en la niñez y aumento progresivo desde la adultez hasta edades avanzadas. En 2021 se observa un incremento respecto a 2010 y 2019, asociado a los efectos de la pandemia y el deterioro de condiciones sanitarias y económicas. Además, los hombres presentan tasas más elevadas que las mujeres en casi todos los grupos de edad, reflejando mayores riesgos laborales, sociales y de salud.
 ")
 ```
 
 ```{r}
 #| echo: false
 #| fig-align: center
-#| out-width: 85%
+#| out-width: 80%
 
 knitr::include_graphics("data/8.jpeg")
 knitr::include_graphics("data/9.jpeg")
@@ -944,48 +916,470 @@ knitr::include_graphics("data/9.jpeg")
 #| echo: false
 #| results: asis
 
-cat("Los años-persona vividos muestran mayores niveles en edades
-tempranas y medias, alcanzando su máximo alrededor de los primeros
-grupos etarios y disminuyendo posteriormente. La reducción observada
-después de edades avanzadas se asocia con el incremento del riesgo
-de mortalidad y la disminución del número de sobrevivientes.")
+cat("Los perfiles de años-persona vividos muestran una estructura consistente con una tabla de vida estacionaria: máxima concentración entre edades infantiles y adultas tempranas, seguida de una reducción progresiva por efecto de la mortalidad acumulada. Entre 2010 y 2019 se aprecia una mejora marginal en supervivencia, particularmente en edades avanzadas. Sin embargo, 2021 evidencia una compresión significativa de los años vividos después de los 60 años, reflejando el shock de mortalidad asociado a la pandemia. El diferencial favorable para mujeres confirma una mayor longevidad y menor intensidad de riesgo actuarial respecto a los hombres.
+")
 ```
 
-### g) Análisis de resultados y efecto de la COVID-19 en Puebla
+### Análisis de resultados y efecto de la COVID-19 en Puebla
 
-Los resultados muestran que Puebla presenta una evolución demográfica
-asociada con una transición demográfica avanzada, conservando 
-características de una población relativamente joven. Entre 2010 y 2019 
-se observa una mejora en los indicadores: aumentó la esperanza de vida,
-disminuyó la mortalidad en edades tempranas y se registraron mayores
-niveles de supervivencia. Desde una perspectiva actuarial, este comportamiento
-refleja mejoras en las condiciones de salud y en la permanencia de 
-la población dentro de la cohorte de sobrevivientes.
+Los resultados muestran que Puebla presenta una evolución demográfica asociada con una transición demográfica avanzada, conservando características de una población relativamente joven. Entre 2010 y 2019 se observa una mejora en los indicadores: aumentó la esperanza de vida, disminuyó la mortalidad en edades tempranas y se registraron mayores niveles de supervivencia. Desde una perspectiva actuarial, este comportamiento refleja mejoras en las condiciones de salud y en la permanencia de la población dentro de la cohorte de sobrevivientes.
 
-Una característica relevante de Puebla es la heterogeneidad 
-entre zonas urbanas y rurales, lo que puede generar diferencias en 
-mortalidad y acceso a servicios de salud, afectando la estructura
-de riesgo poblacional.
+Una característica relevante de Puebla es la heterogeneidad entre zonas urbanas y rurales, lo que puede generar diferencias en mortalidad y acceso a servicios de salud, afectando la estructura de riesgo poblacional.
 
-En 2021 se identifican cambios asociados al impacto de la COVID-19.
-Los indicadores muestran incrementos en las tasas de mortalidad y 
-en la probabilidad de morir, principalmente en edades adultas y 
-avanzadas. Asimismo, la esperanza de vida disminuyó respecto a los
-años previos, con un efecto más notable en hombres.
+En 2021 se identifican cambios asociados al impacto de la COVID-19. Los indicadores muestran incrementos en las tasas de mortalidad y en la probabilidad de morir, principalmente en edades adultas y avanzadas. Asimismo, la esperanza de vida disminuyó respecto a los años previos, con un efecto más notable en hombres.
 
-Desde un enfoque actuarial, la pandemia alteró temporalmente la 
-tendencia esperada de mejora en la supervivencia, incrementando 
-el riesgo de mortalidad y reduciendo los años-persona vividos. 
-Estos resultados evidencian la sensibilidad de los indicadores 
-demográficos ante choques epidemiológicos y su relevancia para la 
-planeación de salud y estimación futura del riesgo poblacional.
+Desde un enfoque actuarial, la pandemia alteró temporalmente la tendencia esperada de mejora en la supervivencia, incrementando el riesgo de mortalidad y reduciendo los años-persona vividos. Estos resultados evidencian la sensibilidad de los indicadores demográficos ante choques epidemiológicos y su relevancia para la planeación de salud y estimación futura del riesgo poblacional.
 
+## Las tablas de vida con causa eliminada para Puebla en 2019
+
+Muestran que los homicidios tienen un efecto importante sobre la supervivencia de la población, aunque su impacto es diferente entre mujeres y hombres. En la población femenina, la eliminación de esta causa de muerte incrementa la esperanza de vida y mejora ligeramente los niveles de supervivencia a lo largo de todas las edades, reflejando una menor exposición a la violencia letal. Por su parte, en la población masculina se observa un aumento más significativo de la esperanza de vida y del número de sobrevivientes, especialmente en edades jóvenes y adultas, donde los homicidios tienen una mayor incidencia. La comparación entre ambas tablas evidencia que la violencia afecta con mayor intensidad a los hombres, ampliando las diferencias de mortalidad por sexo. En conjunto, los resultados destacan la relevancia demográfica de los homicidios en Puebla durante 2019.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+
+library(readxl)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+
+archivo <- "C:/Users/angel/Documents/DEMOGRAFÍA/DEMOGRAPHY_9219/data/Tabla de vida de 2019 de causa eliminada (homicidios) por sexo.xlsx"
+
+# Leer hojas
+hojas <- excel_sheets(archivo)
+
+datos <- lapply(hojas, function(h){
+  read_excel(
+    archivo,
+    sheet = h,
+    skip = 1
+  )
+})
+
+names(datos) <- hojas
+
+# Extraer tablas
+tv_femenina <- datos[["Tabla de vida CE (femenina)"]]
+tv_masculina <- datos[["Tabla de vida CE (masculina)"]]
+
+# Redondear numéricas
+tv_femenina <- tv_femenina %>%
+  mutate(across(where(is.numeric), ~round(.x, 2)))
+
+tv_masculina <- tv_masculina %>%
+  mutate(across(where(is.numeric), ~round(.x, 2)))
+
+# =========================
+# FEMENINA
+# =========================
+
+cat("\\thispagestyle{empty}\n")
+
+landscape(
+  kbl(
+    tv_femenina,
+    booktabs = TRUE,
+    caption = "Tabla de Vida con Causa Eliminada (Femenina)"
+  ) %>%
+    kable_styling(
+      font_size = 4.4
+    ) %>%
+    row_spec(
+      0,
+      bold = TRUE,
+      color = "white",
+      background = "#5B9BD5"
+    )
+)
+
+cat("\\newpage\n")
+
+# =========================
+# MASCULINA
+# =========================
+
+cat("\\thispagestyle{empty}\n")
+
+landscape(
+  kbl(
+    tv_masculina,
+    booktabs = TRUE,
+    caption = "Tabla de Vida con Causa Eliminada (Masculina)"
+  ) %>%
+    kable_styling(
+      font_size = 4.4
+    ) %>%
+    row_spec(
+      0,
+      bold = TRUE,
+      color = "white",
+      background = "#5B9BD5"
+    )
+)
+
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+
+library(readxl)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+
+archivo <- "C:/Users/angel/Documents/DEMOGRAFÍA/DEMOGRAPHY_9219/data/Gráficas CE.xlsx"
+
+# Leer hojas
+mujeres <- read_excel(archivo, sheet = "Mujeres")
+hombres <- read_excel(archivo, sheet = "Hombres")
+
+# Eliminar columnas completamente vacías
+mujeres <- mujeres %>%
+  select(where(~ !all(is.na(.))))
+
+hombres <- hombres %>%
+  select(where(~ !all(is.na(.))))
+
+# Renombrar columnas
+names(mujeres) <- c(
+  "Edad",
+  "$nq_x$",
+  "$nq_x^{CE}$",
+  "Edad",
+  "$e_x$",
+  "$e_x^{CE}$"
+)
+
+names(hombres) <- c(
+  "Edad",
+  "$nq_x$",
+  "$nq_x^{CE}$",
+  "Edad",
+  "$e_x$",
+  "$e_x^{CE}$"
+)
+cat("\\clearpage")
+# =========================
+# TABLA MUJERES
+# =========================
+
+kbl(
+  mujeres,
+  caption = "Mujeres",
+  booktabs = TRUE,
+  escape = FALSE
+) %>%
+  add_header_above(
+    c(
+      " " = 1,
+      "Probabilidades de muerte" = 2,
+      " " = 1,
+      "Esperanzas de vida" = 2
+    )
+  ) %>%
+  kable_styling(
+    latex_options = "scale_down",
+    font_size = 8
+  )
+
+# =========================
+# TABLA HOMBRES
+# =========================
+
+kbl(
+  hombres,
+  caption = "Hombres",
+  booktabs = TRUE,
+  escape = FALSE
+) %>%
+  add_header_above(
+    c(
+      " " = 1,
+      "Probabilidades de muerte" = 2,
+      " " = 1,
+      "Esperanzas de vida" = 2
+    )
+  ) %>%
+  kable_styling(
+    latex_options = "scale_down",
+    font_size = 8
+  )
+cat("\\clearpage")
+```
+
+![](data/probabilidades%20de%20muerte%20mujeres%202019.jpeg){fig-align="center" width="378"}
+
+![](data/probabilidades%20de%20muerte%20hombres%202019.jpeg){fig-align="center" width="378"}
+
+El comportamiento de las probabilidades de muerte muestra el patrón típico de la mortalidad: niveles elevados en la edad cero, una disminución en la infancia, un mínimo en edades tempranas y un incremento progresivo que se acelera en edades avanzadas. El ajuste suavizado reproduce adecuadamente la tendencia general, especialmente en edades intermedias, donde ambas curvas coinciden casi por completo, lo que indica un buen desempeño del modelo para fines actuariales. Sin embargo, se observan discrepancias en edades extremas. En la infancia, la variabilidad de la mortalidad dificulta un ajuste preciso, mientras que en edades avanzadas la menor exposición genera mayor inestabilidad. Al comparar por sexo, los hombres presentan mayores probabilidades de muerte en la mayoría de las edades, mientras que las mujeres muestran una curva más baja y estable. Esto es consistente con diferencias estructurales en la mortalidad y la esperanza de vida.
+
+![](data/esperanza_vida_nacimiento_hombres_2019.jpeg){fig-align="center" width="381"}
+
+![](data/esperanza_vida_nacimiento_mujeres_2019.jpeg){fig-align="center" width="380"}
+
+Las curvas de esperanza de vida al nacimiento presentan el comportamiento esperado: una disminución conforme aumenta la edad, reflejando la reducción del tiempo de vida restante. El ajuste suavizado reproduce de manera consistente la tendencia observada, manteniéndose ligeramente por encima de la serie original en la mayoría de las edades, lo que indica una leve sobreestimación sistemática. Esta diferencia es más notable en edades tempranas y medias, pero se reduce en edades avanzadas, donde ambas curvas convergen. El modelo capta adecuadamente la estructura general de la supervivencia, por lo que resulta útil para aplicaciones actuariales. Al comparar por sexo, las mujeres presentan mayores niveles de esperanza de vida en todas las edades, lo que evidencia su menor mortalidad relativa. En conjunto, los resultados son coherentes con patrones demográficos conocidos y validan el uso del ajuste como aproximación estable de la función de supervivencia.
+
+#### Definiciones demográficas
+
+Sea:
+
+-   $l_x$: función de sobrevivencia (proporción de mujeres que sobreviven hasta edad $x$)
+-   $f_x$: tasa específica de fecundidad a la edad $x$
+-   $\alpha, \beta$: edades límite del periodo reproductivo
+
+La **Tasa Global de Fecundidad (TGF)** se define como:
+
+$$ TGF = \sum_{x=\alpha}^{\beta} f_x $$
+
+La **Tasa Bruta de Reproducción (GRR)** considera solo hijas:
+
+$$ GRR = \sum_{x=\alpha}^{\beta} f_x^F $$
+
+donde:
+
+$$ f_x^F = \frac{f_x}{1 + SRB} $$
+
+y $SRB$ es la razón de sexos al nacer.
+
+
+
+#### Tasa Neta de Reproducción
+
+La **Tasa Neta de Reproducción (NRR)** incorpora mortalidad:
+
+$$ NRR = \sum_{x=\alpha}^{\beta} l_x f_x^F $$
+
+Factorizando:
+
+$$ NRR = \left( \sum_{x=\alpha}^{\beta} l_x f_x \right) \cdot \frac{1}{1 + SRB} $$
+
+Pero también puede expresarse como:
+
+$$ NRR = p(A)\cdot GRR $$
+
+donde:
+
+$$ p(A) = \text{probabilidad de sobrevivir al periodo reproductivo} $$
+
+
+
+#### Condición de reemplazo
+
+Para una población estacionaria:
+
+$$ NRR = 1 $$
+
+Entonces:
+
+$$ 1 = p(A)\cdot GRR \Rightarrow GRR = \frac{1}{p(A)} $$
+
+Si:
+
+$$ p(A) \approx 0.98 $$
+
+entonces:
+
+$$ GRR \approx \frac{1}{0.98} \approx 1.02 $$
+
+
+#### Relación con la TGF
+
+Sabemos que:
+
+$$ GRR = \frac{TGF}{1 + SRB} $$
+
+Despejando:
+
+$$ TGF = GRR \cdot (1 + SRB) $$
+
+Sustituyendo:
+
+$$ TGF = \frac{1}{p(A)}(1 + SRB) $$
+
+
+#### Sustitución numérica
+
+Usando:
+
+-   $p(A) = 0.98$
+-   $SRB = 1.05$
+
+$$ TGF = \frac{1}{0.98}(1 + 1.05) $$
+
+$$ TGF = 1.02 \cdot 2.05 \approx 2.1 $$
+
+#### Conclusión
+
+La **tasa de reemplazo** es aproximadamente:
+
+$$ TGF \approx 2.1 $$
+
+Esto se debe a que:
+
+-   No todas las mujeres sobreviven hasta el final de su periodo reproductivo ($l_x$)
+-   Nacen más hombres que mujeres ($SRB > 1$)
+
+Por lo tanto, se requieren en promedio **2.1 hijos por mujer** para mantener constante la población.
+
+## Resultados ejecutivos
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+resultados <- data.frame(
+  Indicador = c("Tasa Global de Fecundidad (TGF)",
+                "Tasa Bruta de Reproducción (TBR)",
+                "Tasa Neta de Reproducción (TNR)"),
+  `2010` = c(1.57, 0.7654, 0.73),
+  `2019` = c(1.38, 0.6729, 0.65)
+)
+
+knitr::kable(
+  resultados,
+  digits = 4,
+  caption = "Indicadores de fecundidad y reproducción. Puebla, 2010 y 2019"
+)
+```
+
+## Hallazgos clave
+
+-   La **Tasa Global de Fecundidad (TGF)** disminuyó de **1.57** a **1.38 hijos por mujer**, equivalente a una reducción de **12.1%** entre 2010 y 2019.
+-   La **Tasa Bruta de Reproducción (TBR)** pasó de **0.7654** a **0.6729 hijas por mujer**, una disminución de **12.1%**.
+-   La **Tasa Neta de Reproducción (TNR)** descendió de **0.73** a **0.65**, lo que representa una reducción de **11.0%**.
+
+## Interpretación
+
+Los resultados muestran una reducción sostenida de la fecundidad en Puebla durante el periodo 2010–2019. La disminución simultánea de la TGF, TBR y TNR indica que las mujeres están teniendo menos hijos y que la capacidad de reemplazo generacional se ha reducido. Además, la TNR permanece por debajo de 1 en ambos años, lo que sugiere que cada generación de mujeres es más pequeña que la anterior.
+
+## Conclusión ejecutiva
+
+Puebla consolidó una tendencia de descenso en la fecundidad entre 2010 y 2019. La reducción de los indicadores de reproducción refleja una transición demográfica avanzada y anticipa un crecimiento poblacional más lento en las próximas décadas.
+
+```{r grafica2010}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 3.4
+#| fig-height: 2.4
+
+library(ggplot2)
+
+edades <- c("15-19","20-24","25-29","30-34",
+            "35-39","40-44","45-49")
+
+fx2010 <- c(0.0461,0.0879,0.0837,0.0586,
+            0.0292,0.0080,0.0009)
+
+datos2010 <- data.frame(
+  Edad = factor(edades, levels = edades),
+  Tasa = fx2010
+)
+
+ggplot(datos2010,
+       aes(Edad,Tasa,group=1)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title="Puebla 2010",
+    x="Edad quinquenal",
+    y="f(x,5)"
+  ) +
+  theme_minimal()
+```
+
+```{r grafica2019}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 3.4
+#| fig-height: 2.4
+
+library(ggplot2)
+
+fx2019 <- c(0.0431,0.0762,0.0724,0.0510,
+            0.0263,0.0068,0.0005)
+
+datos2019 <- data.frame(
+  Edad = factor(edades, levels = edades),
+  Tasa = fx2019
+)
+
+ggplot(datos2019,
+       aes(Edad,Tasa,group=1)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title="Puebla 2019",
+    x="Edad quinquenal",
+    y="f(x,5)"
+  ) +
+  theme_minimal()
+```
+
+## Análisis de las tasas específicas de fecundidad
+
+Las curvas de fecundidad de Puebla en 2010 y 2019 presentan un patrón similar: la fecundidad alcanza su máximo en el grupo de 20 a 24 años y disminuye progresivamente en edades posteriores.
+
+Sin embargo, en 2019 se observan tasas específicas de fecundidad menores en casi todos los grupos de edad, especialmente entre los 20 y 34 años, donde se concentra la mayor parte de los nacimientos.
+
+Esta reducción es consistente con los descensos observados en la TGF, TBR y TNR, lo que evidencia una menor intensidad reproductiva y una disminución en la capacidad de reemplazo generacional. En conjunto, los resultados reflejan la continuidad de la transición demográfica en Puebla y una tendencia hacia un crecimiento poblacional más moderado.
+
+
+\clearpage
+
+```{r}
+#| echo: false
+
+library(readxl)
+library(dplyr)
+library(gt)
+
+tefe <- read_excel(
+  "C:/Users/angel/Documents/DEMOGRAFÍA/DEMOGRAPHY_9219/data/Tasas Específicas de Fecundidad (TEFE) por grupo de edad. Puebla, México y China, 2019.xlsx",
+  sheet = "Tasas Específicas de Fecundidad",
+  skip = 2
+)
+
+colnames(tefe) <- c(
+  "Grupo_Edad",
+  "Puebla",
+  "Mexico",
+  "China"
+)
+
+tefe %>%
+  gt() %>%
+  tab_header(
+    title = md("**Tasas Específicas de Fecundidad (TEFE), 2019**"),
+    subtitle = "Comparación entre Puebla, México y China"
+  ) %>%
+  cols_label(
+    Grupo_Edad = "Grupo de edad",
+    Puebla = "Puebla",
+    Mexico = "México",
+    China = "China"
+  ) %>%
+  fmt_number(
+    columns = c(Puebla, Mexico, China),
+    decimals = 2
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  opt_row_striping() %>%
+  tab_source_note(
+    source_note = "Fuente: Elaboración propia con datos de fecundidad 2019."
+  )
+```
+
+![](data/TEFE 2019.jpeg)
+
+**Interpretación:**
+
+Las tasas específicas de fecundidad presentan su mayor nivel entre los **20 y 29 años** en Puebla, México y China, lo que indica que la mayor concentración de nacimientos ocurre en estas edades. Puebla registra las tasas más altas, seguida de México, mientras que China muestra niveles considerablemente menores, especialmente en el grupo de **15 a 19 años**. A partir de los **30 años**, la fecundidad disminuye progresivamente en los tres casos hasta alcanzar valores muy bajos entre los **45 y 49 años**.
 
 ### Referencias
 
-Consejo Nacional de Población (CONAPO). (2024). Proyecciones de población de México y entidades federativas 1950–2070.
+-   Wachter, K. W. (2014). *Essential demographic methods*. Harvard University Press.
 
+-   Preston, S., Heuveline, P., & Guillot, M. (2001). Demography: Measuring and Modeling Population Processes.
 
-Wachter, K. W. (2006). Essential Demographic Methods. Harvard University Press.
+-   Instituto Nacional de Estadística y Geografía (INEGI). (s. f.). *Instituto Nacional de Estadística y Geografía*. <https://www.inegi.org.mx/>
 
-Preston, S., Heuveline, P., & Guillot, M. (2001). Demography: Measuring and Modeling Population Processes.
+-   National Bureau of Statistics of China. (s. f.). *Age-specific fertility rates and total fertility rate*. <https://www.stats.gov.cn/>
